@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmaSalud - Tu Farmacia Online</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style id="app-style">
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .modal {
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .drawer {
+      transition: transform 0.3s ease;
+    }
+    
+    .drawer-closed {
+      transform: translateX(100%);
+    }
+    
+    .drawer-open {
+      transform: translateX(0);
+    }
+    
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #4F46E5;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .tag {
+      background-color: #E0E7FF;
+      border-radius: 9999px;
+      padding: 0.25rem 0.75rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      font-size: 0.875rem;
+    }
+    
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <i class="fas fa-clinic-medical text-indigo-600 text-2xl mr-2"></i>
+        <h1 class="text-xl font-bold text-indigo-600">FarmaSalud</h1>
+      </div>
+      <div class="flex items-center">
+        <button id="favorites-button" class="p-2 text-gray-600 hover:text-indigo-600 relative">
+          <i class="fas fa-heart text-xl"></i>
+          <span id="favorites-count" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 mb-20">
+    <h2 class="text-2xl font-bold mb-6">Nuestros Productos</h2>
+    
+    <!-- Product Grid -->
+    <div class="product-grid mb-10">
+      <!-- Product 1 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <img src="https://cdn.pixabay.com/photo/2016/03/02/20/13/medicine-1232079_1280.jpg" alt="Vitamina C" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="font-semibold text-lg mb-1">Vitamina C 1000mg</h3>
+          <p class="text-gray-600 mb-2">30 comprimidos</p>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-indigo-600">$12.99</span>
+            <button class="add-to-favorites bg-white text-indigo-600 border border-indigo-600 px-3 py-1 rounded-full hover:bg-indigo-600 hover:text-white transition" data-id="1" data-name="Vitamina C 1000mg" data-price="12.99" data-img="https://cdn.pixabay.com/photo/2016/03/02/20/13/medicine-1232079_1280.jpg">
+              <i class="far fa-heart"></i> Favorito
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Product 2 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <img src="https://cdn.pixabay.com/photo/2017/06/19/16/19/soap-2419840_1280.jpg" alt="Jabón Neutro" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="font-semibold text-lg mb-1">Jabón Neutro Hipoalergénico</h3>
+          <p class="text-gray-600 mb-2">100g</p>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-indigo-600">$5.50</span>
+            <button class="add-to-favorites bg-white text-indigo-600 border border-indigo-600 px-3 py-1 rounded-full hover:bg-indigo-600 hover:text-white transition" data-id="2" data-name="Jabón Neutro Hipoalergénico" data-price="5.50" data-img="https://cdn.pixabay.com/photo/2017/06/19/16/19/soap-2419840_1280.jpg">
+              <i class="far fa-heart"></i> Favorito
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Product 3 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <img src="https://cdn.pixabay.com/photo/2019/05/09/12/42/cbd-4190530_1280.jpg" alt="Aceite CBD" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="font-semibold text-lg mb-1">Aceite CBD Terapéutico</h3>
+          <p class="text-gray-600 mb-2">30ml</p>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-indigo-600">$29.99</span>
+            <button class="add-to-favorites bg-white text-indigo-600 border border-indigo-600 px-3 py-1 rounded-full hover:bg-indigo-600 hover:text-white transition" data-id="3" data-name="Aceite CBD Terapéutico" data-price="29.99" data-img="https://cdn.pixabay.com/photo/2019/05/09/12/42/cbd-4190530_1280.jpg">
+              <i class="far fa-heart"></i> Favorito
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Product 4 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <img src="https://cdn.pixabay.com/photo/2021/05/09/12/04/calcium-6241224_1280.jpg" alt="Calcio + Vitamina D" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="font-semibold text-lg mb-1">Calcio + Vitamina D3</h3>
+          <p class="text-gray-600 mb-2">60 cápsulas</p>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-indigo-600">$14.75</span>
+            <button class="add-to-favorites bg-white text-indigo-600 border border-indigo-600 px-3 py-1 rounded-full hover:bg-indigo-600 hover:text-white transition" data-id="4" data-name="Calcio + Vitamina D3" data-price="14.75" data-img="https://cdn.pixabay.com/photo/2021/05/09/12/04/calcium-6241224_1280.jpg">
+              <i class="far fa-heart"></i> Favorito
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Product 5 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <img src="https://cdn.pixabay.com/photo/2017/01/31/22/32/doctor-2027768_1280.png" alt="Termómetro Digital" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="font-semibold text-lg mb-1">Termómetro Digital</h3>
+          <p class="text-gray-600 mb-2">Lectura rápida</p>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-indigo-600">$8.99</span>
+            <button class="add-to-favorites bg-white text-indigo-600 border border-indigo-600 px-3 py-1 rounded-full hover:bg-indigo-600 hover:text-white transition" data-id="5" data-name="Termómetro Digital" data-price="8.99" data-img="https://cdn.pixabay.com/photo/2017/01/31/22/32/doctor-2027768_1280.png">
+              <i class="far fa-heart"></i> Favorito
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Product 6 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <img src="https://cdn.pixabay.com/photo/2014/07/05/08/18/tablets-384846_1280.jpg" alt="Ibuprofeno" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="font-semibold text-lg mb-1">Ibuprofeno 400mg</h3>
+          <p class="text-gray-600 mb-2">20 tabletas</p>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-indigo-600">$6.25</span>
+            <button class="add-to-favorites bg-white text-indigo-600 border border-indigo-600 px-3 py-1 rounded-full hover:bg-indigo-600 hover:text-white transition" data-id="6" data-name="Ibuprofeno 400mg" data-price="6.25" data-img="https://cdn.pixabay.com/photo/2014/07/05/08/18/tablets-384846_1280.jpg">
+              <i class="far fa-heart"></i> Favorito
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout Button -->
+    <div class="text-center mt-8">
+      <button id="checkout-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg">
+        <i class="fas fa-credit-card mr-2"></i> Pagar
+      </button>
+    </div>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white shadow-lg-up p-4">
+    <div class="container mx-auto">
+      <button id="gift-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg w-full flex items-center justify-center">
+        <i class="fas fa-gift mr-2"></i> Obtener Sugerencias de Regalos
+      </button>
+    </div>
+  </div>
+
+  <!-- Gift Suggestions Modal -->
+  <div id="gift-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 opacity-0 invisible">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+      <div class="relative">
+        <div class="p-6">
+          <h2 class="text-xl font-bold mb-4" id="modal-title">Sugerencias de Regalo Personalizadas</h2>
+          
+          <!-- Gift Form -->
+          <div id="gift-form">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="occasion">
+                Ocasión
+              </label>
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="occasion" type="text" placeholder="Ej: Cumpleaños, Aniversario, etc.">
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="interests">
+                Intereses del Destinatario
+              </label>
+              <div class="flex items-center">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="interests" type="text" placeholder="Escriba un interés y presione Enter">
+                <button id="add-interest" class="bg-indigo-600 text-white ml-2 px-3 py-2 rounded-lg">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              <div id="tags-container" class="tag-container mt-2"></div>
+            </div>
+            
+            <div class="mb-6">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="budget">
+                Presupuesto ($)
+              </label>
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="budget" type="number" min="0" placeholder="Ingrese monto">
+            </div>
+            
+            <button id="submit-gift-form" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+              Obtener Sugerencias
+            </button>
+          </div>
+          
+          <!-- Loading Spinner -->
+          <div id="loading-spinner" class="hidden flex flex-col items-center justify-center py-12">
+            <div class="spinner mb-4"></div>
+            <p class="text-gray-600">Buscando las mejores sugerencias para ti...</p>
+          </div>
+          
+          <!-- Results -->
+          <div id="gift-results" class="hidden">
+            <div class="mb-6">
+              <h3 class="font-bold text-lg mb-3">Productos Recomendados:</h3>
+              <ul class="space-y-4" id="suggestions-list">
+                <!-- Suggestions will be dynamically added here -->
+              </ul>
+            </div>
+            
+            <div class="text-center mb-6">
+              <p class="italic text-gray-600" id="haiku">
+                Salud que florece,<br>
+                En cada gota de amor,<br>
+                Mejor bienestar.
+              </p>
+            </div>
+            
+            <div class="flex space-x-3">
+              <button id="save-suggestions" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex-1">
+                <i class="fas fa-heart mr-1"></i> Guardar en Favoritos
+              </button>
+              <button id="start-over" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex-1">
+                <i class="fas fa-redo mr-1"></i> Comenzar de Nuevo
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600" id="close-modal">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="payment-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 opacity-0 invisible">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+      <h2 class="text-xl font-bold mb-4">Métodos de Pago</h2>
+      <form id="payment-form" novalidate>
+        <!-- Payment Method Selection -->
+        <div class="mb-4">
+          <label class="block font-semibold mb-2">Seleccione una opción:</label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input type="radio" name="paymentMethod" value="card" class="form-radio text-indigo-600" checked>
+              <span class="ml-2">Tarjeta de Crédito/Débito</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="paymentMethod" value="bank" class="form-radio text-indigo-600">
+              <span class="ml-2">Transferencia Bancaria</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Card Details -->
+        <div id="card-fields" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1" for="card-number">Número de tarjeta</label>
+            <input id="card-number" type="text" maxlength="19" placeholder="1234 5678 9012 3456"
+              class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-300">
+          </div>
+          <div class="flex space-x-4">
+            <div class="flex-1">
+              <label class="block text-sm font-medium mb-1" for="card-expiry">Vencimiento (MM/AA)</label>
+              <input id="card-expiry" type="text" maxlength="5" placeholder="MM/AA"
+                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-300">
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium mb-1" for="card-cvv">CVV</label>
+              <input id="card-cvv" type="text" maxlength="4" placeholder="123"
+                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-300">
+            </div>
+          </div>
+        </div>
+
+        <!-- Bank Transfer Instructions -->
+        <div id="bank-details" class="hidden space-y-2">
+          <p class="text-gray-700">Por favor realice la transferencia a:</p>
+          <ul class="list-disc list-inside text-gray-600">
+            <li><strong>Banco:</strong> Banco Ejemplo S.A.</li>
+            <li><strong>Cuenta:</strong> 0123456789</li>
+            <li><strong>CLABE:</strong> 012 3456 7890 1234 5678</li>
+          </ul>
+          <p class="text-sm text-gray-500">Al completar la transferencia, envíe comprobante a pagos@farmasalud.com</p>
+        </div>
+
+        <!-- Form Buttons -->
+        <div class="mt-6 flex justify-between">
+          <button type="button" id="close-payment" class="text-gray-600 hover:text-gray-800">
+            Cancelar
+          </button>
+          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded">
+            Confirmar Pago
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login/Register Modal -->
+  <div id="login-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 invisible z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 id="auth-title" class="text-xl font-bold">Login</h2>
+        <button id="close-login" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      <!-- Toggle -->
+      <div class="flex mb-6 border-b">
+        <button id="toggle-login" class="flex-1 py-2 text-center font-medium border-b-2 border-indigo-600">Login</button>
+        <button id="toggle-register" class="flex-1 py-2 text-center font-medium text-gray-600">Register</button>
+      </div>
+      <!-- Form -->
+      <form id="auth-form" novalidate class="space-y-4">
+        <div>
+          <label for="auth-email" class="block text-sm font-medium">Email</label>
+          <input id="auth-email" type="email" required
+            class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-300">
+          <p id="error-email" class="text-red-500 text-sm mt-1 hidden"></p>
+        </div>
+        <div>
+          <label for="auth-password" class="block text-sm font-medium">Password</label>
+          <input id="auth-password" type="password" required
+            class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-300">
+          <p id="error-password" class="text-red-500 text-sm mt-1 hidden"></p>
+        </div>
+        <div id="remember-container" class="flex items-center">
+          <input id="remember-me" type="checkbox" checked class="form-checkbox text-indigo-600">
+          <label for="remember-me" class="ml-2 text-sm">Remember Me</label>
+        </div>
+        <p id="error-general" class="text-red-500 text-sm hidden"></p>
+        <button type="submit" id="auth-submit"
+          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+          Login
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Favorites Drawer -->
+  <div id="favorites-drawer" class="drawer fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-lg z-50 drawer-closed">
+    <div class="p-6 h-full flex flex-col">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">Mis Favoritos</h2>
+        <button id="close-drawer" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      
+      <div id="favorites-content" class="flex-grow overflow-y-auto">
+        <div id="empty-favorites" class="flex flex-col items-center justify-center h-full text-gray-400">
+          <i class="far fa-heart text-6xl mb-4"></i>
+          <p class="text-center">No tienes favoritos guardados aún. Agrega productos a tus favoritos para verlos aquí.</p>
+        </div>
+        
+        <div id="favorites-list" class="hidden space-y-4">
+          <!-- Favorites will be dynamically added here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script id="app-script">
+    // Initialize localStorage if not exists
+    if (!localStorage.getItem('favorites')) {
+      localStorage.setItem('favorites', JSON.stringify([]));
+    }
+    
+    // DOM Elements
+    const giftButton = document.getElementById('gift-button');
+    const giftModal = document.getElementById('gift-modal');
+    const closeModal = document.getElementById('close-modal');
+    const giftForm = document.getElementById('gift-form');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const giftResults = document.getElementById('gift-results');
+    const submitGiftForm = document.getElementById('submit-gift-form');
+    const startOver = document.getElementById('start-over');
+    const saveSuggestions = document.getElementById('save-suggestions');
+    const favoritesButton = document.getElementById('favorites-button');
+    const favoritesDrawer = document.getElementById('favorites-drawer');
+    const closeDrawer = document.getElementById('close-drawer');
+    const emptyFavorites = document.getElementById('empty-favorites');
+    const favoritesList = document.getElementById('favorites-list');
+    const favoritesCount = document.getElementById('favorites-count');
+    const occasionInput = document.getElementById('occasion');
+    const interestsInput = document.getElementById('interests');
+    const addInterestButton = document.getElementById('add-interest');
+    const tagsContainer = document.getElementById('tags-container');
+    const budgetInput = document.getElementById('budget');
+    const suggestionsList = document.getElementById('suggestions-list');
+    const checkoutButton = document.getElementById('checkout-button');
+    const paymentModal = document.getElementById('payment-modal');
+    const closePayment = document.getElementById('close-payment');
+    const paymentForm = document.getElementById('payment-form');
+    const cardFields = document.getElementById('card-fields');
+    const bankDetails = document.getElementById('bank-details');
+    const loginModal = document.getElementById('login-modal');
+    const closeLogin = document.getElementById('close-login');
+    const toggleLogin = document.getElementById('toggle-login');
+    const toggleRegister = document.getElementById('toggle-register');
+    const authTitle = document.getElementById('auth-title');
+    const authForm = document.getElementById('auth-form');
+    const authEmail = document.getElementById('auth-email');
+    const authPassword = document.getElementById('auth-password');
+    const rememberMe = document.getElementById('remember-me');
+    const authSubmit = document.getElementById('auth-submit');
+    const errorEmail = document.getElementById('error-email');
+    const errorPassword = document.getElementById('error-password');
+    const errorGeneral = document.getElementById('error-general');
+
+    // Interests/Tags Functionality
+    let interests = [];
+    
+    function addInterest() {
+      const interest = interestsInput.value.trim();
+      if (interest && !interests.includes(interest)) {
+        interests.push(interest);
+        renderInterests();
+        interestsInput.value = '';
+      }
+    }
+    
+    function removeInterest(interest) {
+      interests = interests.filter(i => i !== interest);
+      renderInterests();
+    }
+    
+    function renderInterests() {
+      tagsContainer.innerHTML = '';
+      interests.forEach(interest => {
+        const tag = document.createElement('div');
+        tag.className = 'tag flex items-center';
+        tag.innerHTML = `
+          <span>${interest}</span>
+          <button class="ml-1 text-gray-500 hover:text-gray-800" data-interest="${interest}">
+            <i class="fas fa-times-circle"></i>
+          </button>
+        `;
+        tag.querySelector('button').addEventListener('click', () => removeInterest(interest));
+        tagsContainer.appendChild(tag);
+      });
+    }
+    
+    // Add interest when Enter is pressed
+    interestsInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        addInterest();
+      }
+    });
+    
+    addInterestButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      addInterest();
+    });
+    
+    // Update favorites count
+    function updateFavoritesCount() {
+      const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      favoritesCount.textContent = favorites.length;
+      
+      // Toggle empty state
+      if (favorites.length === 0) {
+        emptyFavorites.classList.remove('hidden');
+        favoritesList.classList.add('hidden');
+      } else {
+        emptyFavorites.classList.add('hidden');
+        favoritesList.classList.remove('hidden');
+      }
+    }
+    
+    // Render favorites
+    function renderFavorites() {
+      const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      favoritesList.innerHTML = '';
+      
+      favorites.forEach(item => {
+        const favoriteItem = document.createElement('div');
+        favoriteItem.className = 'flex items-center bg-white rounded-lg shadow p-3';
+        favoriteItem.innerHTML = `
+          <img src="${item.img}" alt="${item.name}" class="w-16 h-16 object-cover rounded mr-3">
+          <div class="flex-grow">
+            <h4 class="font-semibold">${item.name}</h4>
+            <p class="text-indigo-600 font-bold">$${item.price}</p>
+          </div>
+          <button class="remove-favorite text-gray-400 hover:text-red-500" data-id="${item.id}">
+            <i class="fas fa-trash"></i>
+          </button>
+        `;
+        favoritesList.appendChild(favoriteItem);
+      });
+      
+      // Add event listeners to remove buttons
+      document.querySelectorAll('.remove-favorite').forEach(button => {
+        button.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+          const updatedFavorites = favorites.filter(item => item.id !== id);
+          localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+          updateFavoritesCount();
+          renderFavorites();
+        });
+      });
+      
+      updateFavoritesCount();
+    }
+    
+    // Add to favorites functionality
+    document.querySelectorAll('.add-to-favorites').forEach(button => {
+      button.addEventListener('click', function() {
+        const id = this.getAttribute('data-id');
+        const name = this.getAttribute('data-name');
+        const price = this.getAttribute('data-price');
+        const img = this.getAttribute('data-img');
+        
+        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        
+        // Check if already in favorites
+        if (!favorites.some(item => item.id === id)) {
+          favorites.push({ id, name, price, img });
+          localStorage.setItem('favorites', JSON.stringify(favorites));
+          updateFavoritesCount();
+          renderFavorites();
+          
+          // Visual feedback
+          this.innerHTML = '<i class="fas fa-heart"></i> Agregado';
+          this.classList.add('bg-indigo-600', 'text-white');
+          
+          setTimeout(() => {
+            this.innerHTML = '<i class="far fa-heart"></i> Favorito';
+            this.classList.remove('bg-indigo-600', 'text-white');
+          }, 1500);
+        }
+      });
+    });
+    
+    // Gift modal functionality
+    giftButton.addEventListener('click', () => {
+      giftModal.classList.remove('opacity-0', 'invisible');
+      resetGiftForm();
+    });
+    
+    closeModal.addEventListener('click', () => {
+      giftModal.classList.add('opacity-0', 'invisible');
+    });
+    
+    function resetGiftForm() {
+      giftForm.classList.remove('hidden');
+      loadingSpinner.classList.add('hidden');
+      giftResults.classList.add('hidden');
+      occasionInput.value = '';
+      interestsInput.value = '';
+      budgetInput.value = '';
+      interests = [];
+      renderInterests();
+    }
+    
+    submitGiftForm.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      const occasion = occasionInput.value.trim();
+      const budget = budgetInput.value.trim();
+
+      if (!occasion || interests.length === 0 || !budget) {
+        alert('Por favor complete todos los campos requeridos.');
+        return;
+      }
+
+      // Show loading spinner
+      giftForm.classList.add('hidden');
+      loadingSpinner.classList.remove('hidden');
+
+      // Call the Magic Loop 'GiftSuggest'
+      fetch('https://magicloops.dev/api/loop/3fcb560e-6cb8-4fe7-b9e1-2ba94983f610/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          occasion,
+          interests,
+          budget: Number(budget)
+        })
+      })
+      .then(res => res.json())
+      .then(({ suggestions, haiku }) => {
+        loadingSpinner.classList.add('hidden');
+        giftResults.classList.remove('hidden');
+
+        // Render suggestions
+        suggestionsList.innerHTML = '';
+        suggestions.forEach(item => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <p class="font-bold">${item.product}</p>
+            <p class="text-gray-600">${item.explanation}</p>
+          `;
+          suggestionsList.appendChild(li);
+        });
+
+        // Render haiku
+        document.getElementById('haiku').innerHTML = haiku.replace(/\n/g, '<br>');
+      })
+      .catch(err => {
+        loadingSpinner.classList.add('hidden');
+        giftForm.classList.remove('hidden');
+        alert('Lo sentimos, hubo un error obteniendo sugerencias. Intente de nuevo.');
+        console.error(err);
+      });
+    });
+    
+    startOver.addEventListener('click', resetGiftForm);
+    
+    saveSuggestions.addEventListener('click', () => {
+      // Mock saving suggestions to favorites
+      const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      
+      // Add mock suggestion to favorites if not already there
+      const mockSuggestion = {
+        id: 'gift-suggestion-1',
+        name: 'Vitamina C + Zinc',
+        price: '15.99',
+        img: 'https://cdn.pixabay.com/photo/2016/03/02/20/13/medicine-1232079_1280.jpg'
+      };
+      
+      if (!favorites.some(item => item.id === mockSuggestion.id)) {
+        favorites.push(mockSuggestion);
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        updateFavoritesCount();
+        renderFavorites();
+        
+        alert('¡Sugerencias guardadas en favoritos!');
+      } else {
+        alert('Estas sugerencias ya están en tus favoritos.');
+      }
+    });
+    
+    // Favorites drawer functionality
+    favoritesButton.addEventListener('click', () => {
+      favoritesDrawer.classList.remove('drawer-closed');
+      favoritesDrawer.classList.add('drawer-open');
+      renderFavorites();
+    });
+    
+    closeDrawer.addEventListener('click', () => {
+      favoritesDrawer.classList.remove('drawer-open');
+      favoritesDrawer.classList.add('drawer-closed');
+    });
+    
+    // Open payment modal
+    checkoutButton.addEventListener('click', () => {
+      paymentModal.classList.remove('opacity-0','invisible');
+    });
+    closePayment.addEventListener('click', () => {
+      paymentModal.classList.add('opacity-0','invisible');
+    });
+
+    // Toggle payment inputs
+    paymentForm.paymentMethod.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (radio.value === 'card' && radio.checked) {
+          cardFields.classList.remove('hidden');
+          bankDetails.classList.add('hidden');
+        }
+        if (radio.value === 'bank' && radio.checked) {
+          bankDetails.classList.remove('hidden');
+          cardFields.classList.add('hidden');
+        }
+      });
+    });
+
+    // Simple validation & submission
+    paymentForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const method = paymentForm.paymentMethod.value;
+      if (method === 'card') {
+        const num = document.getElementById('card-number').value.trim();
+        const exp = document.getElementById('card-expiry').value.trim();
+        const cvv = document.getElementById('card-cvv').value.trim();
+        if (!num || !exp || !cvv) {
+          alert('Por favor complete todos los datos de la tarjeta.');
+          return;
+        }
+        // TODO: integrate real payment API here
+        alert('Pago con tarjeta procesado correctamente.');
+      } else {
+        // Bank transfer selected
+        alert('Por favor siga las instrucciones de transferencia bancaria.');
+      }
+      paymentModal.classList.add('opacity-0','invisible');
+    });
+    
+    // AUTH MODAL ELEMENTS
+    // Open auth modal (you can tie this to a "Login" button)
+    function openAuthModal() {
+      loginModal.classList.remove('opacity-0','invisible');
+    }
+    // Close
+    closeLogin.addEventListener('click', () => {
+      loginModal.classList.add('opacity-0','invisible');
+      authForm.reset();
+      [errorEmail,errorPassword,errorGeneral].forEach(e=>e.classList.add('hidden'));
+    });
+    
+    // Toggle views
+    function setMode(mode) {
+      authTitle.textContent = mode;
+      authSubmit.textContent = mode;
+      rememberMe.parentElement.style.display = mode === 'Login' ? 'flex' : 'none';
+      toggleLogin.classList.toggle('border-indigo-600', mode==='Login');
+      toggleRegister.classList.toggle('border-indigo-600', mode==='Register');
+      toggleLogin.classList.toggle('text-gray-600', mode!=='Login');
+      toggleRegister.classList.toggle('text-gray-600', mode!=='Register');
+    }
+    toggleLogin.addEventListener('click', ()=> setMode('Login'));
+    toggleRegister.addEventListener('click', ()=> setMode('Register'));
+    // default
+    setMode('Login');
+    
+    // Form submission
+    authForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      [errorEmail,errorPassword,errorGeneral].forEach(el => { el.textContent=''; el.classList.add('hidden'); });
+      let valid = true;
+      if (!authEmail.value.includes('@')) {
+        errorEmail.textContent = 'Por favor ingresa un email válido.';
+        errorEmail.classList.remove('hidden');
+        valid = false;
+      }
+      if (authPassword.value.length < 6) {
+        errorPassword.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+        errorPassword.classList.remove('hidden');
+        valid = false;
+      }
+      if (!valid) return;
+      
+      const mode = authSubmit.textContent.toLowerCase();
+      try {
+        // Replace URL with your auth endpoint
+        const res = await fetch(`/api/auth/${mode}`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            email: authEmail.value,
+            password: authPassword.value
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error interno');
+        
+        // On success: store session
+        const session = { token: data.token, email: authEmail.value };
+        if (rememberMe.checked) localStorage.setItem('session', JSON.stringify(session));
+        else sessionStorage.setItem('session', JSON.stringify(session));
+        
+        // close modal
+        loginModal.classList.add('opacity-0','invisible');
+        // you may update UI to reflect logged in state...
+      } catch(err) {
+        errorGeneral.textContent = err.message || 'Falló la autenticación';
+        errorGeneral.classList.remove('hidden');
+      }
+    });
+    
+    // Initialize
+    updateFavoritesCount();
+    renderFavorites();
+  </script>
+</body>
+</html>
