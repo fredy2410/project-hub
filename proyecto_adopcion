@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Adopta Una Mascota</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style id="app-style">
+      body {
+        font-family: 'Nunito', sans-serif;
+        background-color: #f8f9fa;
+      }
+      
+      .banner {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                          url('https://cdn.pixabay.com/photo/2017/07/25/01/22/cat-2536662_1280.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 500px;
+      }
+      
+      .pet-card {
+        transition: all 0.3s ease;
+      }
+      
+      .pet-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      
+      .hidden {
+        display: none;
+      }
+      
+      .swiper {
+        width: 100%;
+        height: 400px;
+      }
+      
+      .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      /* Custom loader */
+      .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* File upload preview */
+      .preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      
+      .preview-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+      }
+      
+      .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+      
+      .preview-remove {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #ff4757;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      
+      .progress-bar {
+        height: 5px;
+        background-color: #ddd;
+        border-radius: 3px;
+        margin-top: 5px;
+        overflow: hidden;
+      }
+      
+      .progress {
+        height: 100%;
+        background-color: #4CAF50;
+        width: 0%;
+        transition: width 0.3s;
+      }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md py-4">
+      <div class="container mx-auto flex justify-between items-center px-4">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-paw text-purple-600 text-3xl"></i>
+          <a href="javascript:void(0)" class="text-2xl font-bold text-purple-600">AdoptaPet</a>
+        </div>
+        <div class="hidden md:flex space-x-8">
+          <a href="javascript:void(0)" class="nav-link text-gray-600 hover:text-purple-600 font-semibold" data-page="home">Inicio</a>
+          <a href="javascript:void(0)" class="nav-link text-gray-600 hover:text-purple-600 font-semibold" data-page="search">Buscar Mascotas</a>
+          <a href="javascript:void(0)" class="nav-link text-gray-600 hover:text-purple-600 font-semibold" data-page="publish">Publicar Mascota</a>
+          <a href="javascript:void(0)" class="nav-link text-gray-600 hover:text-purple-600 font-semibold" data-page="contact">Contacto</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home-page" class="page">
+      <div class="banner flex flex-col justify-center items-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 text-center">Encuentra tu compañero perfecto</h1>
+        <p class="text-xl text-white mb-8 text-center max-w-2xl">Dale un hogar a una mascota que lo necesita y descubre la alegría incondicional que traerá a tu vida.</p>
+        <button class="nav-link bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full text-xl transition-colors duration-300" data-page="search">
+          Encuentra tu nueva mascota
+        </button>
+      </div>
+      
+      <div class="container mx-auto py-16 px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">¿Por qué adoptar?</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white p-6 rounded-xl shadow-md text-center">
+            <div class="bg-purple-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+              <i class="fas fa-heart text-purple-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-gray-800">Salvas una vida</h3>
+            <p class="text-gray-600">Al adoptar, le das una segunda oportunidad a un animal que necesita un hogar amoroso.</p>
+          </div>
+          
+          <div class="bg-white p-6 rounded-xl shadow-md text-center">
+            <div class="bg-purple-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+              <i class="fas fa-hands-helping text-purple-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-gray-800">Compañía incondicional</h3>
+            <p class="text-gray-600">Las mascotas adoptadas suelen ser extremadamente leales y agradecidas con sus nuevos dueños.</p>
+          </div>
+          
+          <div class="bg-white p-6 rounded-xl shadow-md text-center">
+            <div class="bg-purple-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+              <i class="fas fa-paw text-purple-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-gray-800">Mascota para cada estilo</h3>
+            <p class="text-gray-600">Hay mascotas de todas las edades, tamaños y personalidades esperando encontrar su hogar ideal.</p>
+          </div>
+        </div>
+        
+        <div class="text-center mt-12">
+          <button class="nav-link bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full text-xl transition-colors duration-300" data-page="search">
+            Ver mascotas disponibles
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Page -->
+    <div id="search-page" class="page hidden">
+      <div class="bg-purple-100 py-10">
+        <div class="container mx-auto px-4">
+          <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Buscar Mascotas</h1>
+          
+          <div class="bg-white p-6 rounded-xl shadow-md mb-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div class="w-full md:w-auto">
+                <label class="block text-gray-700 font-medium mb-2">Tipo de mascota</label>
+                <select id="pet-type-filter" class="w-full md:w-48 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  <option value="todos">Todos</option>
+                  <option value="perro">Perros</option>
+                  <option value="gato">Gatos</option>
+                  <option value="ave">Aves</option>
+                  <option value="otro">Otros</option>
+                </select>
+              </div>
+              
+              <div class="w-full md:w-auto">
+                <label class="block text-gray-700 font-medium mb-2">Edad</label>
+                <select id="pet-age-filter" class="w-full md:w-48 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  <option value="todos">Cualquier edad</option>
+                  <option value="cachorro">Cachorro/Cría</option>
+                  <option value="joven">Joven</option>
+                  <option value="adulto">Adulto</option>
+                  <option value="senior">Senior</option>
+                </select>
+              </div>
+              
+              <div class="w-full md:w-auto">
+                <label class="block text-gray-700 font-medium mb-2">Tamaño</label>
+                <select id="pet-size-filter" class="w-full md:w-48 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  <option value="todos">Cualquier tamaño</option>
+                  <option value="pequeño">Pequeño</option>
+                  <option value="mediano">Mediano</option>
+                  <option value="grande">Grande</option>
+                </select>
+              </div>
+              
+              <div class="w-full md:w-auto mt-4 md:mt-6">
+                <button id="apply-filters" class="w-full md:w-auto bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-md transition-colors duration-300">
+                  <i class="fas fa-search mr-2"></i>Aplicar filtros
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="container mx-auto py-10 px-4">
+        <div id="pets-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <!-- Pet cards will be loaded here -->
+          <div class="pet-card bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313_1280.jpg" alt="Perro" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="text-xl font-bold mb-2 text-gray-800">Luna</h3>
+              <div class="flex items-center mb-3">
+                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded">Perro</span>
+                <span class="ml-2 text-gray-600 text-sm">2 años</span>
+              </div>
+              <p class="text-gray-600 mb-4">Luna es una perrita cariñosa y juguetona que busca un hogar lleno de amor.</p>
+              <button class="view-details w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300" data-id="1">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+          
+          <div class="pet-card bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg" alt="Gato" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="text-xl font-bold mb-2 text-gray-800">Simba</h3>
+              <div class="flex items-center mb-3">
+                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded">Gato</span>
+                <span class="ml-2 text-gray-600 text-sm">1 año</span>
+              </div>
+              <p class="text-gray-600 mb-4">Simba es un gatito curioso y tranquilo, perfecto para familias con niños.</p>
+              <button class="view-details w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300" data-id="2">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+          
+          <div class="pet-card bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="https://cdn.pixabay.com/photo/2017/09/25/13/12/puppy-2785074_1280.jpg" alt="Perro" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="text-xl font-bold mb-2 text-gray-800">Rocky</h3>
+              <div class="flex items-center mb-3">
+                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded">Perro</span>
+                <span class="ml-2 text-gray-600 text-sm">4 años</span>
+              </div>
+              <p class="text-gray-600 mb-4">Rocky es un perro leal y protector, ideal como compañero para paseos.</p>
+              <button class="view-details w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300" data-id="3">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+          
+          <div class="pet-card bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="https://cdn.pixabay.com/photo/2018/07/13/10/20/kittens-3535404_1280.jpg" alt="Gato" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="text-xl font-bold mb-2 text-gray-800">Milo</h3>
+              <div class="flex items-center mb-3">
+                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded">Gato</span>
+                <span class="ml-2 text-gray-600 text-sm">6 meses</span>
+              </div>
+              <p class="text-gray-600 mb-4">Milo es un gatito muy juguetón y sociable que busca una familia amorosa.</p>
+              <button class="view-details w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300" data-id="4">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+          
+          <div class="pet-card bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="https://cdn.pixabay.com/photo/2021/01/30/15/14/akita-5964180_1280.jpg" alt="Perro" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="text-xl font-bold mb-2 text-gray-800">Akira</h3>
+              <div class="flex items-center mb-3">
+                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded">Perro</span>
+                <span class="ml-2 text-gray-600 text-sm">3 años</span>
+              </div>
+              <p class="text-gray-600 mb-4">Akira es una perra inteligente y obediente, buena con niños y otros animales.</p>
+              <button class="view-details w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300" data-id="5">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+          
+          <div class="pet-card bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="https://cdn.pixabay.com/photo/2016/11/29/01/10/bird-1866471_1280.jpg" alt="Ave" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="text-xl font-bold mb-2 text-gray-800">Perico</h3>
+              <div class="flex items-center mb-3">
+                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded">Ave</span>
+                <span class="ml-2 text-gray-600 text-sm">1 año</span>
+              </div>
+              <p class="text-gray-600 mb-4">Perico es un ave colorida y alegre, perfecta para alegrar tu hogar.</p>
+              <button class="view-details w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300" data-id="6">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pet Details Page -->
+    <div id="pet-details-page" class="page hidden">
+      <div class="container mx-auto py-10 px-4">
+        <button id="back-to-search" class="flex items-center text-purple-600 hover:text-purple-800 font-semibold mb-6 transition-colors duration-300">
+          <i class="fas fa-arrow-left mr-2"></i>Volver a la búsqueda
+        </button>
+        
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+          <!-- Swiper -->
+          <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide">
+                <img src="https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313_1280.jpg" alt="Mascota 1" />
+              </div>
+              <div class="swiper-slide">
+                <img src="https://cdn.pixabay.com/photo/2019/08/07/14/11/dog-4390885_1280.jpg" alt="Mascota 2" />
+              </div>
+              <div class="swiper-slide">
+                <img src="https://cdn.pixabay.com/photo/2019/05/27/19/08/puppy-4233538_1280.jpg" alt="Mascota 3" />
+              </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+          
+          <div class="p-6 md:p-8">
+            <div class="flex justify-between items-start">
+              <div>
+                <h1 id="pet-name" class="text-3xl font-bold mb-2 text-gray-800">Luna</h1>
+                <div class="flex items-center mb-4">
+                  <span id="pet-type" class="bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded-full">Perro</span>
+                  <span id="pet-age" class="ml-3 text-gray-600">2 años</span>
+                  <span id="pet-size" class="ml-3 text-gray-600">Mediano</span>
+                </div>
+              </div>
+              
+              <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                Disponible
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <div class="md:col-span-2">
+                <h2 class="text-xl font-bold mb-3 text-gray-800">Sobre Luna</h2>
+                <div class="bg-gray-50 p-4 rounded-lg mb-6 max-h-[300px] overflow-y-auto">
+                  <div class="mb-4">
+                    <h3 class="font-semibold text-gray-700 mb-2">Personalidad</h3>
+                    <p class="text-gray-600">Luna es una perrita muy cariñosa y juguetona. Le encanta estar con personas y es muy buena con niños. Disfruta de paseos largos y jugar a buscar la pelota. Es muy inteligente y aprende rápidamente nuevos trucos.</p>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <h3 class="font-semibold text-gray-700 mb-2">Historia</h3>
+                    <p class="text-gray-600">Luna fue rescatada de la calle hace aproximadamente 6 meses. Cuando la encontramos estaba desnutrida y asustada, pero con amor y paciencia ha aprendido a confiar en las personas y ahora está lista para encontrar un hogar definitivo.</p>
+                  </div>
+                  
+                  <div>
+                    <h3 class="font-semibold text-gray-700 mb-2">Necesidades especiales</h3>
+                    <p class="text-gray-600">Luna no tiene necesidades médicas especiales. Está vacunada, desparasitada y esterilizada. Necesita ejercicio diario y estimulación mental para mantenerse feliz y saludable. Le gusta tener espacio para correr.</p>
+                  </div>
+                </div>
+                
+                <h2 class="text-xl font-bold mb-3 text-gray-800">Detalles adicionales</h2>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-gray-50 p-3 rounded-lg">
+                    <span class="block text-gray-500 text-sm">Sexo</span>
+                    <span class="font-medium text-gray-700">Hembra</span>
+                  </div>
+                  
+                  <div class="bg-gray-50 p-3 rounded-lg">
+                    <span class="block text-gray-500 text-sm">Peso</span>
+                    <span class="font-medium text-gray-700">15 kg</span>
+                  </div>
+                  
+                  <div class="bg-gray-50 p-3 rounded-lg">
+                    <span class="block text-gray-500 text-sm">Raza</span>
+                    <span class="font-medium text-gray-700">Mestiza</span>
+                  </div>
+                  
+                  <div class="bg-gray-50 p-3 rounded-lg">
+                    <span class="block text-gray-500 text-sm">Nivel de energía</span>
+                    <span class="font-medium text-gray-700">Alto</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-gray-50 p-6 rounded-xl">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">¿Quieres adoptar a Luna?</h2>
+                <p class="text-gray-600 mb-6">Completa el formulario de contacto y nos pondremos en contacto contigo para coordinar una visita.</p>
+                
+                <button id="contact-for-adoption" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
+                  Contactar para adopción
+                </button>
+                
+                <div class="mt-6">
+                  <div class="flex items-center mb-3">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span class="text-gray-700">Vacunado</span>
+                  </div>
+                  
+                  <div class="flex items-center mb-3">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span class="text-gray-700">Desparasitado</span>
+                  </div>
+                  
+                  <div class="flex items-center mb-3">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span class="text-gray-700">Esterilizado</span>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span class="text-gray-700">Identificado con microchip</span>
+                  </div>
+                </div>
+                
+                <hr class="my-6 border-gray-200">
+                
+                <p class="text-sm text-gray-500">Al adoptar una mascota te comprometes a cuidarla y quererla para toda su vida.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Publish Page -->
+    <div id="publish-page" class="page hidden">
+      <div class="bg-purple-100 py-10">
+        <div class="container mx-auto px-4">
+          <h1 class="text-3xl font-bold mb-2 text-center text-gray-800">Publicar una mascota en adopción</h1>
+          <p class="text-gray-600 text-center mb-6">Completa el formulario con los datos de la mascota que quieres poner en adopción.</p>
+        </div>
+      </div>
+      
+      <div class="container mx-auto py-10 px-4">
+        <form id="publish-form" class="bg-white rounded-xl shadow-md p-6 md:p-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-gray-700 font-medium mb-2" for="pet-name-input">Nombre de la mascota*</label>
+              <input type="text" id="pet-name-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-medium mb-2" for="pet-type-input">Tipo de mascota*</label>
+              <select id="pet-type-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                <option value="">Selecciona una opción</option>
+                <option value="perro">Perro</option>
+                <option value="gato">Gato</option>
+                <option value="ave">Ave</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-medium mb-2" for="pet-age-input">Edad*</label>
+              <div class="grid grid-cols-2 gap-4">
+                <input type="number" id="pet-age-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required min="0">
+                <select id="pet-age-unit" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  <option value="meses">Meses</option>
+                  <option value="años">Años</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-medium mb-2" for="pet-size-input">Tamaño*</label>
+              <select id="pet-size-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                <option value="">Selecciona una opción</option>
+                <option value="pequeño">Pequeño</option>
+                <option value="mediano">Mediano</option>
+                <option value="grande">Grande</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-medium mb-2" for="pet-gender-input">Sexo*</label>
+              <select id="pet-gender-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                <option value="">Selecciona una opción</option>
+                <option value="macho">Macho</option>
+                <option value="hembra">Hembra</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-medium mb-2" for="pet-breed-input">Raza</label>
+              <input type="text" id="pet-breed-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            
+            <div class="md:col-span-2">
+              <label class="block text-gray-700 font-medium mb-2" for="pet-personality-input">Personalidad*</label>
+              <textarea id="pet-personality-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 h-24" required></textarea>
+            </div>
+            
+            <div class="md:col-span-2">
+              <label class="block text-gray-700 font-medium mb-2" for="pet-history-input">Historia</label>
+              <textarea id="pet-history-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 h-24"></textarea>
+            </div>
+            
+            <div class="md:col-span-2">
+              <label class="block text-gray-700 font-medium mb-2" for="pet-needs-input">Necesidades especiales</label>
+              <textarea id="pet-needs-input" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 h-24"></textarea>
+            </div>
+            
+            <div class="md:col-span-2">
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-gray-700 font-medium" for="pet-images">Imágenes*</label>
+                <span class="text-sm text-gray-500">Máximo 5 archivos, 25MB por archivo</span>
+              </div>
+              
+              <div class="border-2 border-dashed border-gray-300 rounded-md p-6 text-center" id="drop-area">
+                <input type="file" id="pet-images" class="hidden" accept="image/*" multiple>
+                <label for="pet-images" class="cursor-pointer">
+                  <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                  <p class="text-gray-700 mb-1">Arrastra las imágenes aquí o haz clic para seleccionar</p>
+                  <p class="text-sm text-gray-500">PNG, JPG o JPEG</p>
+                </label>
+              </div>
+              
+              <div class="preview-container" id="image-preview">
+                <!-- Preview images will be added here -->
+              </div>
+            </div>
+            
+            <div class="md:col-span-2">
+              <div class="flex items-center mb-4">
+                <input type="checkbox" id="terms-checkbox" class="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" required>
+                <label for="terms-checkbox" class="ml-2 text-gray-700">Confirmo que esta mascota está disponible para adopción y toda la información proporcionada es correcta*</label>
+              </div>
+            </div>
+            
+            <div class="md:col-span-2">
+              <button type="submit" id="publish-submit" class="w-full md:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-300 flex items-center justify-center">
+                <i class="fas fa-paw mr-2"></i>Publicar mascota
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contact-page" class="page hidden">
+      <div class="bg-purple-100 py-10">
+        <div class="container mx-auto px-4">
+          <h1 class="text-3xl font-bold mb-2 text-center text-gray-800">Contacto</h1>
+          <p class="text-gray-600 text-center mb-6">¿Tienes alguna pregunta sobre la adopción? ¡Contáctanos!</p>
+        </div>
+      </div>
+      
+      <div class="container mx-auto py-10 px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Envíanos un mensaje</h2>
+            
+            <form id="contact-form">
+              <div class="mb-4">
+                <label class="block text-gray-700 font-medium mb-2" for="name">Nombre completo*</label>
+                <input type="text" id="name" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                <span class="text-red-500 text-sm hidden error-message" id="name-error">Por favor, introduce tu nombre completo</span>
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-gray-700 font-medium mb-2" for="email">Email*</label>
+                <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                <span class="text-red-500 text-sm hidden error-message" id="email-error">Por favor, introduce un email válido</span>
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-gray-700 font-medium mb-2" for="phone">Teléfono*</label>
+                <input type="tel" id="phone" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                <span class="text-red-500 text-sm hidden error-message" id="phone-error">Por favor, introduce un número de teléfono válido</span>
+              </div>
+              
+              <div class="mb-6">
+                <label class="block text-gray-700 font-medium mb-2" for="message">Mensaje*</label>
+                <textarea id="message" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 h-32" required></textarea>
+                <span class="text-red-500 text-sm hidden error-message" id="message-error">Por favor, introduce tu mensaje</span>
+              </div>
+              
+              <button type="submit" id="contact-submit" class="w-full md:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-300">
+                Enviar mensaje
+              </button>
+              
+              <div id="form-loader" class="loader hidden mt-4"></div>
+              
+              <div id="form-success" class="mt-4 p-4 bg-green-100 text-green-700 rounded-lg hidden">
+                <i class="fas fa-check-circle mr-2"></i>¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.
+              </div>
+            </form>
+          </div>
+          
+          <div>
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8 mb-6">
+              <h2 class="text-2xl font-bold mb-6 text-gray-800">Información de contacto</h2>
+              
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <div class="bg-purple-100 rounded-full p-3 mr-4">
+                    <i class="fas fa-map-marker-alt text-purple-600"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-700">Dirección</h3>
+                    <p class="text-gray-600">Av. Principal #123, Ciudad</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="bg-purple-100 rounded-full p-3 mr-4">
+                    <i class="fas fa-phone-alt text-purple-600"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-700">Teléfono</h3>
+                    <p class="text-gray-600">+123 456 7890</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="bg-purple-100 rounded-full p-3 mr-4">
+                    <i class="fas fa-envelope text-purple-600"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-700">Email</h3>
+                    <p class="text-gray-600">contacto@adoptapet.com</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="bg-purple-100 rounded-full p-3 mr-4">
+                    <i class="fas fa-clock text-purple-600"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-700">Horario de atención</h3>
+                    <p class="text-gray-600">Lunes a Viernes: 9:00 - 18:00</p>
+                    <p class="text-gray-600">Sábado: 10:00 - 14:00</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-6">
+                <h3 class="font-semibold text-gray-700 mb-3">Síguenos en redes sociales</h3>
+                <div class="flex space-x-4">
+                  <a href="javascript:void(0)" class="bg-purple-100 hover:bg-purple-200 text-purple-600 p-3 rounded-full transition-colors duration-300">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a href="javascript:void(0)" class="bg-purple-100 hover:bg-purple-200 text-purple-600 p-3 rounded-full transition-colors duration-300">
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                  <a href="javascript:void(0)" class="bg-purple-100 hover:bg-purple-200 text-purple-600 p-3 rounded-full transition-colors duration-300">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+              <h2 class="text-2xl font-bold mb-6 text-gray-800">Preguntas frecuentes</h2>
+              
+              <div class="space-y-4">
+                <div>
+                  <h3 class="font-semibold text-gray-700 mb-1">¿Cuál es el proceso de adopción?</h3>
+                  <p class="text-gray-600">El proceso incluye completar un formulario, una entrevista y una visita a tu hogar para asegurar que es adecuado para la mascota.</p>
+                </div>
+                
+                <div>
+                  <h3 class="font-semibold text-gray-700 mb-1">¿Hay algún costo por adoptar?</h3>
+                  <p class="text-gray-600">Sí, hay una cuota de adopción que cubre vacunas, desparasitación y esterilización de la mascota.</p>
+                </div>
+                
+                <div>
+                  <h3 class="font-semibold text-gray-700 mb-1">¿Puedo devolver a la mascota si no nos adaptamos?</h3>
+                  <p class="text-gray-600">Siempre aceptamos de vuelta a nuestros animales, pero te pedimos que consideres bien la decisión antes de adoptar.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-10">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <div class="flex items-center space-x-2 mb-4">
+              <i class="fas fa-paw text-purple-400 text-3xl"></i>
+              <span class="text-2xl font-bold text-white">AdoptaPet</span>
+            </div>
+            <p class="text-gray-300 mb-4">Encuentra tu compañero perfecto y dale un hogar lleno de amor.</p>
+            <div class="flex space-x-4">
+              <a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">
+                <i class="fab fa-twitter"></i>
+              </a>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Enlaces rápidos</h3>
+            <ul class="space-y-2">
+              <li><a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">Inicio</a></li>
+              <li><a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">Buscar Mascotas</a></li>
+              <li><a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">Publicar Mascota</a></li>
+              <li><a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">Contacto</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Recursos</h3>
+            <ul class="space-y-2">
+              <li><a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">Guía de adopción</a></li>
+              <li><a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">Cuidados básicos</a></li>
+              <li><a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">Preguntas frecuentes</a></li>
+              <li><a href="javascript:void(0)" class="text-gray-300 hover:text-purple-400 transition-colors duration-300">Blog</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Contacto</h3>
+            <ul class="space-y-2">
+              <li class="flex items-center">
+                <i class="fas fa-map-marker-alt mr-2 text-purple-400"></i>
+                <span class="text-gray-300">Av. Principal #123, Ciudad</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-phone-alt mr-2 text-purple-400"></i>
+                <span class="text-gray-300">+123 456 7890</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-envelope mr-2 text-purple-400"></i>
+                <span class="text-gray-300">contacto@adoptapet.com</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <hr class="border-gray-700 my-8">
+        
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <p class="text-gray-400">© 2025 AdoptaPet. Todos los derechos reservados.</p>
+          <div class="mt-4 md:mt-0 flex space-x-6">
+            <a href="javascript:void(0)" class="text-gray-400 hover:text-purple-400 transition-colors duration-300">Política de privacidad</a>
+            <a href="javascript:void(0)" class="text-gray-400 hover:text-purple-400 transition-colors duration-300">Términos de uso</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script id="app-script">
+      // Navigation
+      document.addEventListener('DOMContentLoaded', function() {
+        // Page navigation
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        function showPage(pageId) {
+          pages.forEach(page => {
+            page.classList.add('hidden');
+          });
+          document.getElementById(pageId + '-page').classList.remove('hidden');
+          window.scrollTo(0, 0);
+        }
+        
+        navLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            const pageId = this.getAttribute('data-page');
+            showPage(pageId);
+          });
+        });
+        
+        // Show home page by default
+        showPage('home');
+        
+        // Pet details view
+        const viewDetailsButtons = document.querySelectorAll('.view-details');
+        viewDetailsButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const petId = this.getAttribute('data-id');
+            showPage('pet-details');
+            
+            // In a real app, we would fetch pet details using the petId
+            console.log('Viewing pet details for pet ID:', petId);
+          });
+        });
+        
+        // Back button
+        document.getElementById('back-to-search').addEventListener('click', function() {
+          showPage('search');
+        });
+        
+        // Contact for adoption button
+        document.getElementById('contact-for-adoption').addEventListener('click', function() {
+          showPage('contact');
+        });
+        
+        // Initialize Swiper
+        const swiper = new Swiper(".mySwiper", {
+          pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+          },
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+        });
+        
+        // Contact form validation
+        const contactForm = document.getElementById('contact-form');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+        const messageInput = document.getElementById('message');
+        const formLoader = document.getElementById('form-loader');
+        const formSuccess = document.getElementById('form-success');
+        
+        contactForm.addEventListener('submit', function(event) {
+          event.preventDefault();
+          
+          // Reset error messages
+          document.querySelectorAll('.error-message').forEach(el => {
+            el.classList.add('hidden');
+          });
+          
+          let isValid = true;
+          
+          // Validate name
+          if (!nameInput.value.trim()) {
+            document.getElementById('name-error').classList.remove('hidden');
+            isValid = false;
+          }
+          
+          // Validate email
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(emailInput.value)) {
+            document.getElementById('email-error').classList.remove('hidden');
+            isValid = false;
+          }
+          
+          // Validate phone
+          const phoneRegex = /^\+?[0-9]{8,15}$/;
+          if (!phoneRegex.test(phoneInput.value)) {
+            document.getElementById('phone-error').classList.remove('hidden');
+            isValid = false;
+          }
+          
+          // Validate message
+          if (!messageInput.value.trim()) {
+            document.getElementById('message-error').classList.remove('hidden');
+            isValid = false;
+          }
+          
+          if (isValid) {
+            // Show loader
+            formLoader.classList.remove('hidden');
+            
+            // Simulate form submission
+            setTimeout(function() {
+              formLoader.classList.add('hidden');
+              formSuccess.classList.remove('hidden');
+              contactForm.reset();
+              
+              // Hide success message after 5 seconds
+              setTimeout(function() {
+                formSuccess.classList.add('hidden');
+              }, 5000);
+            }, 1500);
+          }
+        });
+        
+        // File upload handling
+        const fileInput = document.getElementById('pet-images');
+        const dropArea = document.getElementById('drop-area');
+        const preview = document.getElementById('image-preview');
+        const maxFiles = 5;
+        let files = [];
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+          dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+          dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+          dropArea.classList.add('border-purple-500');
+        }
+        
+        function unhighlight() {
+          dropArea.classList.remove('border-purple-500');
+        }
+        
+        // Handle dropped files
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+          const dt = e.dataTransfer;
+          const newFiles = [...dt.files];
+          handleFiles(newFiles);
+        }
+        
+        fileInput.addEventListener('change', function() {
+          handleFiles([...fileInput.files]);
+        });
+        
+        function handleFiles(newFiles) {
+          // Limit to maxFiles
+          const remainingSlots = maxFiles - files.length;
+          newFiles = newFiles.slice(0, remainingSlots);
+          
+          if (newFiles.length === 0) return;
+          
+          newFiles.forEach(file => {
+            // Validate file type
+            if (!file.type.match('image.*')) return;
+            
+            // Validate file size (25MB max)
+            if (file.size > 25 * 1024 * 1024) return;
+            
+            files.push(file);
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const index = files.indexOf(file);
+              
+              const div = document.createElement('div');
+              div.className = 'preview-item';
+              div.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+                <span class="preview-remove" data-index="${index}">&times;</span>
+                <div class="progress-bar">
+                  <div class="progress"></div>
+                </div>
+              `;
+              
+              preview.appendChild(div);
+              
+              // Add event listener to remove button
+              div.querySelector('.preview-remove').addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                removeFile(index);
+              });
+              
+              // Simulate upload progress
+              simulateProgress(div.querySelector('.progress'));
+            };
+            
+            reader.readAsDataURL(file);
+          });
+          
+          // Reset the input
+          fileInput.value = '';
+        }
+        
+        function removeFile(index) {
+          files.splice(index, 1);
+          preview.innerHTML = '';
+          
+          // Re-render previews with updated indices
+          files.forEach((file, i) => {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const div = document.createElement('div');
+              div.className = 'preview-item';
+              div.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+                <span class="preview-remove" data-index="${i}">&times;</span>
+              `;
+              
+              preview.appendChild(div);
+              
+              // Add event listener to remove button
+              div.querySelector('.preview-remove').addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                removeFile(index);
+              });
+            };
+            
+            reader.readAsDataURL(file);
+          });
+        }
+        
+        function simulateProgress(progressBar) {
+          let width = 0;
+          const interval = setInterval(function() {
+            if (width >= 100) {
+              clearInterval(interval);
+            } else {
+              width += 5;
+              progressBar.style.width = width + '%';
+            }
+          }, 100);
+        }
+        
+        // Publish form submission
+        const publishForm = document.getElementById('publish-form');
+        
+        publishForm.addEventListener('submit', function(event) {
+          event.preventDefault();
+          
+          // Simple validation
+          const petName = document.getElementById('pet-name-input').value;
+          const petType = document.getElementById('pet-type-input').value;
+          const termsChecked = document.getElementById('terms-checkbox').checked;
+          
+          if (!petName || !petType || !termsChecked || files.length === 0) {
+            alert('Por favor, completa todos los campos obligatorios y sube al menos una imagen.');
+            return;
+          }
+          
+          // Simulate form submission with upload progress
+          preview.querySelectorAll('.progress').forEach(progress => {
+            progress.style.width = '0%';
+          });
+          
+          preview.querySelectorAll('.progress-bar').forEach(bar => {
+            bar.style.display = 'block';
+          });
+          
+          // Simulate progress for each file
+          let uploads = 0;
+          preview.querySelectorAll('.progress').forEach(progress => {
+            simulateProgress(progress);
+            uploads++;
+          });
+          
+          // Show success message after "upload" completes
+          setTimeout(function() {
+            alert('¡Mascota publicada con éxito!');
+            publishForm.reset();
+            files = [];
+            preview.innerHTML = '';
+            showPage('home');
+          }, 3000);
+        });
+        
+        // Apply filters in search page
+        document.getElementById('apply-filters').addEventListener('click', function() {
+          const petType = document.getElementById('pet-type-filter').value;
+          const petAge = document.getElementById('pet-age-filter').value;
+          const petSize = document.getElementById('pet-size-filter').value;
+          
+          // In a real app, we would filter pets based on these values
+          console.log('Filtering pets:', { type: petType, age: petAge, size: petSize });
+          
+          // For the prototype, just show a message
+          alert('Filtros aplicados. En una aplicación real, se mostrarían las mascotas filtradas.');
+        });
+      });
+    </script>
+  </body>
+</html>
